@@ -2,7 +2,7 @@
 
 #include "matmult.cuh"
 
-// TODO this should be .c not .cu - split header into .cuh and .h part
+// TODO this could be .c not .cu if the API was more isolated from CUDA
 
 void MatFillX(Matrix* X)
 {
@@ -49,13 +49,11 @@ int main()
     Matrix Z_gpu_0;
     MatInitHost(&Z_gpu_0, M, N);
     MatMultGPU(X, Y, Z_gpu_0, false);
-    MatPrint(Z_gpu_0, "Z_gpu_0");
     assert(MatEqual(Z_gpu_0, Z, 1e-10));
 
     Matrix Z_gpu_1;
     MatInitHost(&Z_gpu_1, M, N);
     MatMultGPU(X, Y, Z_gpu_1, true);
-    MatPrint(Z_gpu_1, "Z_gpu_1");
     assert(MatEqual(Z_gpu_1, Z, 1e-10));
     return 0;
 }
