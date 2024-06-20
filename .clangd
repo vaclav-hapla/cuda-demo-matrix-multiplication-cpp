@@ -1,0 +1,8 @@
+CompileFlags:
+  Add: [
+    "--cuda-path=/usr/local/cuda-12.5",
+    "--no-cuda-version-check"
+  ]
+  Remove: [
+    "--gpu-architecture=*" 
+  ]
