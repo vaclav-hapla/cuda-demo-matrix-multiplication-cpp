@@ -1,5 +1,7 @@
+* [ ] deallocate
 * [ ] comments
 * [ ] CI
+  - including Valgrind
 * [ ] README.md
 * [ ] revisit .vscode/
 * [ ] commit hook - format
