@@ -1,2 +1,6 @@
-*.o
-*.so
+.cache/
+bin/
+build/
+lib/
+compile_commands.json
+TODO.md
