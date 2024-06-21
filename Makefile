@@ -9,7 +9,7 @@ BIN_DIR := bin
 TEST_DIR := tests
 
 # Define the output shared library name
-OUTPUT_LIB := $(LIB_DIR)/libmylibrary.so
+LIB_NAME := cudamatmult
 
 # Define the compilers and flags
 CC := gcc
@@ -19,10 +19,13 @@ CPPFLAGS := -I$(INCLUDE_DIR)
 CFLAGS := -std=c11 -fPIC $(CPPFLAGS)
 NVCCFLAGS := --gpu-architecture=sm_89 -Xcompiler -fPIC $(CPPFLAGS)
 LDFLAGS := -shared
-LIBS := -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -lmylibrary -L/usr/local/cuda/lib64 -lcudart
+LIBS := -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -l$(LIB_NAME) -L/usr/local/cuda/lib64 -lcudart
 
 
 #### INTERNAL VARIABLES ####
+
+# Define the output library
+OUTPUT_LIB := $(LIB_DIR)/lib$(LIB_NAME).so
 
 # Find all .c and .cu files in SRC_DIR
 SRCS_C := $(wildcard $(SRC_DIR)/*.c)
