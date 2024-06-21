@@ -37,6 +37,9 @@ __device__ __host__ inline float MatGetElement(const Mat* A, int r, int c) { ret
 // Set a matrix element
 __device__ __host__ inline void MatSetElement(Mat* A, int r, int c, float value) { A->elements[r * A->stride + c] = value; }
 
+// Copy a matrix element
+__device__ __host__ inline void MatCopyElement(const Mat* A, Mat* B, int r, int c) { MatSetElement(B, r, c, MatGetElement(A, r, c)); }
+
 // Get the blockSize x blockSize submatrix Asub of A,
 // located C submatrices to the right and R submatrices down
 // from the upper-left corner of A.
