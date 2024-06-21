@@ -28,7 +28,7 @@
         },
         {
             "type": "shell",
-            "label": "Run make with selected command",
+            "label": "make with selected command",
             "command": ".vscode/run_make.sh \"${input:build_command}\"",
             "group": {
                 "kind": "build",
@@ -37,7 +37,7 @@
         },
         {
             "type": "shell",
-            "label": "Run make",
+            "label": "make",
             "command": ".vscode/run_make.sh \"${default_make_target}\"",
             "group": {
                 "kind": "build",

@@ -8,7 +8,7 @@
             "name": "GDB Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileWorkspaceFolder}/bin/example",
+            "program": "${fileWorkspaceFolder}/bin/tests/test00",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileWorkspaceFolder}",
@@ -27,7 +27,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "Run make",
+            "preLaunchTask": "make",
         },
     ]
 }
