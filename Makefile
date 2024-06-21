@@ -48,7 +48,7 @@ all: lib build_test
 lib: $(OUTPUT_LIB)
 
 # Build tests target
-build_test: $(TEST_EXES)
+build_test: lib $(TEST_EXES)
 
 # Target to run all tests
 test: build_test
