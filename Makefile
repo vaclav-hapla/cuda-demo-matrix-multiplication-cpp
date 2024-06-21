@@ -15,7 +15,7 @@ OUTPUT_LIB := $(LIB_DIR)/libmylibrary.so
 CC := gcc
 NVCC := nvcc
 CPPFLAGS := -I$(INCLUDE_DIR)
-# TODO: add optimization flags conditionally
+# TODO: add optimization flags, including -DNDEBUG, conditionally
 CFLAGS := -std=c11 -fPIC $(CPPFLAGS)
 NVCCFLAGS := --gpu-architecture=sm_89 -Xcompiler -fPIC $(CPPFLAGS)
 LDFLAGS := -shared
