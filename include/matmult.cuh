@@ -42,6 +42,11 @@ __device__ __host__ inline float MatGetElement(const Mat* A, int r, int c) { ret
 // Set a matrix element
 __device__ __host__ inline void MatSetElement(Mat* A, int r, int c, float value) { A->elements[r * A->stride + c] = value; }
 
+/*
+Get the blockSize x blockSize sub-matrix Asub of A that is
+located col sub-matrices to the right and row sub-matrices down
+from the upper-left corner of A
+*/
 __device__ __host__ inline void MatGetSubMatrix(Mat* A, int R, int C, int blockSize, Mat* Asub)
 {
     assert(Asub->elements_cudaMalloc == NULL && Asub->elements_malloc == NULL);
@@ -66,13 +71,6 @@ Mat* MatCreateHost(int height, int width);
 Mat* MatCreateGPU(int height, int width);
 
 void MatFree(Mat** X);
-
-/*
-Get the blockSize x blockSize sub-matrix Asub of A that is
-located col sub-matrices to the right and row sub-matrices down
-from the upper-left corner of A
-*/
-__device__ __host__ void MatGetSubMatrix(Mat* A, int R, int C, int blockSize, Mat* Asub);
 
 // Matrix dimensions are assumed to be multiples of BLOCK_SIZE
 void MatMultGPU(const Mat* A, const Mat* B, Mat* C, bool optimized);
