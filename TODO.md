@@ -2,7 +2,7 @@
 * [ ] comments
 * [x] CI
 * [ ] add Valgrind to CI
-* [ ] README.md
+* [x] README.md
 * [ ] revisit .vscode/
 * [ ] commit hook - format
 * [ ] go through the implementation again, particularly the kernel
