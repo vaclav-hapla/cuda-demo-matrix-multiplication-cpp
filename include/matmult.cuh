@@ -19,12 +19,12 @@ typedef struct {
     float* elements;
     float* elements_malloc;
     float* elements_cudaMalloc;
-} Matrix;
+} Mat;
 
 // Thread block size
 #define BLOCK_SIZE 4
 
-__device__ __host__ inline void MatInit(Matrix* X, int height, int width)
+__device__ __host__ inline void MatInit(Mat* X, int height, int width)
 {
     X->height = height;
     X->width  = width;
@@ -37,12 +37,12 @@ __device__ __host__ inline void MatInit(Matrix* X, int height, int width)
 }
 
 // Get a matrix element
-__device__ __host__ inline float GetElement(const Matrix* A, int r, int c) { return A->elements[r * A->stride + c]; }
+__device__ __host__ inline float MatGetElement(const Mat* A, int r, int c) { return A->elements[r * A->stride + c]; }
 
 // Set a matrix element
-__device__ __host__ inline void SetElement(Matrix* A, int r, int c, float value) { A->elements[r * A->stride + c] = value; }
+__device__ __host__ inline void MatSetElement(Mat* A, int r, int c, float value) { A->elements[r * A->stride + c] = value; }
 
-__device__ __host__ inline void GetSubMatrix(Matrix* A, int R, int C, int blockSize, Matrix* Asub)
+__device__ __host__ inline void MatGetSubMatrix(Mat* A, int R, int C, int blockSize, Mat* Asub)
 {
     assert(Asub->elements_cudaMalloc == NULL && Asub->elements_malloc == NULL);
     Asub->stride   = A->stride;
@@ -50,7 +50,7 @@ __device__ __host__ inline void GetSubMatrix(Matrix* A, int R, int C, int blockS
 }
 
 // C_{r,c} = \sum_{k=0}^{w-1} A_{r,k} B_{k,c}
-__device__ __host__ inline float MatMultElement(const Matrix* A, const Matrix* B, int r, int c)
+__device__ __host__ inline float MatMultElement(const Mat* A, const Mat* B, int r, int c)
 {
     float C_rc = 0;
     for (int k = 0; k < A->width; k++) {
@@ -59,26 +59,26 @@ __device__ __host__ inline float MatMultElement(const Matrix* A, const Matrix* B
     return C_rc;
 }
 
-Matrix* MatCreateEmpty(int height, int width);
+Mat* MatCreateEmpty(int height, int width);
 
-Matrix* MatCreateHost(int height, int width);
+Mat* MatCreateHost(int height, int width);
 
-Matrix* MatCreateGPU(int height, int width);
+Mat* MatCreateGPU(int height, int width);
 
-void MatFree(Matrix** X);
+void MatFree(Mat** X);
 
 /*
 Get the blockSize x blockSize sub-matrix Asub of A that is
 located col sub-matrices to the right and row sub-matrices down
 from the upper-left corner of A
 */
-__device__ __host__ void GetSubMatrix(Matrix* A, int R, int C, int blockSize, Matrix* Asub);
+__device__ __host__ void MatGetSubMatrix(Mat* A, int R, int C, int blockSize, Mat* Asub);
 
 // Matrix dimensions are assumed to be multiples of BLOCK_SIZE
-void MatMultGPU(const Matrix* A, const Matrix* B, Matrix* C, bool optimized);
+void MatMultGPU(const Mat* A, const Mat* B, Mat* C, bool optimized);
 
-void MatMultHost(const Matrix* A, const Matrix* B, Matrix* C);
+void MatMultHost(const Mat* A, const Mat* B, Mat* C);
 
-void MatPrint(Matrix* A, const char name[]);
+void MatPrint(Mat* A, const char name[]);
 
-bool MatEqual(Matrix* A, Matrix* B, float tol);
+bool MatEqual(Mat* A, Mat* B, float tol);
