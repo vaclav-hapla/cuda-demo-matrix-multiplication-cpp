@@ -2,15 +2,9 @@
 #include <cuda_runtime.h>
 #include <stdio.h>
 
-/*
-For whole matrix A,
-    A.stride = A.width
-but for A's submatrix Asub
-    Asub.stride = A.stride
-    Asub.width  < A.width
-Matrices are stored in row-major order:
-    M(row, col) = *(M.elements + row * M.stride + col)
-*/
+// Dense matrix structure.
+// Matrices are stored in row-major order:
+//     M(row, col) = *(M.elements + row * M.stride + col)
 typedef struct {
     int    width;
     int    height;
@@ -24,6 +18,7 @@ typedef struct {
 // Thread block size
 #define BLOCK_SIZE 4
 
+// Initialize inner matrix fields without allocating its elements
 __device__ __host__ inline void MatInit(Mat* X, int height, int width)
 {
     X->height = height;
@@ -42,11 +37,11 @@ __device__ __host__ inline float MatGetElement(const Mat* A, int r, int c) { ret
 // Set a matrix element
 __device__ __host__ inline void MatSetElement(Mat* A, int r, int c, float value) { A->elements[r * A->stride + c] = value; }
 
-/*
-Get the blockSize x blockSize sub-matrix Asub of A that is
-located col sub-matrices to the right and row sub-matrices down
-from the upper-left corner of A
-*/
+// Get the blockSize x blockSize submatrix Asub of A,
+// located C submatrices to the right and R submatrices down
+// from the upper-left corner of A.
+// Asub must have been initialized as
+//   MatInit(&Asub, blockSize, blockSize);
 __device__ __host__ inline void MatGetSubMatrix(Mat* A, int R, int C, int blockSize, Mat* Asub)
 {
     assert(Asub->elements_cudaMalloc == NULL && Asub->elements_malloc == NULL);
@@ -54,6 +49,7 @@ __device__ __host__ inline void MatGetSubMatrix(Mat* A, int R, int C, int blockS
     Asub->elements = &(A->elements[R * A->stride * blockSize + C * blockSize]);
 }
 
+// Compute a single element C(r,c) of the matrix-matrix product C = A * B
 // C_{r,c} = \sum_{k=0}^{w-1} A_{r,k} B_{k,c}
 __device__ __host__ inline float MatMultElement(const Mat* A, const Mat* B, int r, int c)
 {
@@ -64,19 +60,26 @@ __device__ __host__ inline float MatMultElement(const Mat* A, const Mat* B, int 
     return C_rc;
 }
 
+// Create a matrix without allocating its elements
 Mat* MatCreateEmpty(int height, int width);
 
+// Create a matrix with elements allocated on the host
 Mat* MatCreateHost(int height, int width);
 
+// Create a matrix with elements allocated on the GPU
 Mat* MatCreateGPU(int height, int width);
 
+// Deallocate a matrix including its elements
 void MatFree(Mat** X);
 
 // Matrix dimensions are assumed to be multiples of BLOCK_SIZE
 void MatMultGPU(const Mat* A, const Mat* B, Mat* C, bool optimized);
 
+// Matrix dimensions are assumed to be multiples of BLOCK_SIZE
 void MatMultHost(const Mat* A, const Mat* B, Mat* C);
 
+// Print matrix elements
 void MatPrint(Mat* A, const char name[]);
 
+// Compare two matrices up to a given tolerance
 bool MatEqual(Mat* A, Mat* B, float tol);

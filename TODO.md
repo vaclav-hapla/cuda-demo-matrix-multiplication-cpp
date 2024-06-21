@@ -1,5 +1,5 @@
 * [x] better memory management
-* [ ] comments
+* [x] comments
 * [x] CI
 * [ ] add Valgrind to CI
 * [x] README.md
