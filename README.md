@@ -14,5 +14,6 @@
     - [`.clangd`](.clangd) file for smooth clangd operation with CUDA
     - [`.clang-format`](.clang-format) file for unified formatting using clang-format
     - [Gitlab Workflow](.github/workflows/makefile.yml) running `make test` in a self-hosted CUDA-enabled runner
-      - I've set up such runner running on an ETH workstation and connected to [the project on GitHub](https://github.com/haplav/cuda-demo-matrix-multiplication)
+      - I've set up such a [runner](https://github.com/haplav/cuda-demo-matrix-multiplication/actions/runners?tab=self-hosted)
+        running on an ETH workstation and connected to [the project on GitHub](https://github.com/haplav/cuda-demo-matrix-multiplication)
     - [MIT License](LICENSE)
