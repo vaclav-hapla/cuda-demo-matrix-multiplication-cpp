@@ -73,9 +73,6 @@ __global__ void MatMult_optimized(Mat MatA, Mat MatB, Mat MatC)
     float* Bsubs = (float*)&(sharedMemory[w * w * sizeof(float)]);
 
     Mat Asub, Bsub, Csub;
-    MatInit(&Asub, w, w);
-    MatInit(&Bsub, w, w);
-    MatInit(&Csub, w, w);
 
     MatGetSubMatrix(&MatC, R, C, w, &Csub);
     // Each thread computes one element of Csub

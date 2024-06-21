@@ -40,11 +40,10 @@ __device__ __host__ inline void MatSetElement(Mat* A, int r, int c, float value)
 // Get the blockSize x blockSize submatrix Asub of A,
 // located C submatrices to the right and R submatrices down
 // from the upper-left corner of A.
-// Asub must have been initialized as
-//   MatInit(&Asub, blockSize, blockSize);
 __device__ __host__ inline void MatGetSubMatrix(Mat* A, int R, int C, int blockSize, Mat* Asub)
 {
     assert(Asub->elements_cudaMalloc == NULL && Asub->elements_malloc == NULL);
+    MatInit(Asub, blockSize, blockSize);
     Asub->stride   = A->stride;
     Asub->elements = &(A->elements[R * A->stride * blockSize + C * blockSize]);
 }
