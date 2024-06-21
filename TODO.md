@@ -1,4 +1,4 @@
-* [ ] better memory management
+* [x] better memory management
 * [ ] comments
 * [x] CI
 * [ ] add Valgrind to CI
