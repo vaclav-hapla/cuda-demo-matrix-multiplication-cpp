@@ -49,6 +49,7 @@ int main()
 
     Mat* Z_gpu_1 = MatCreateHost(M, N);
     MatMultGPU(X, Y, Z_gpu_1, true);
+    MatPrint(Z_gpu_1, "Z_gpu_1");
     assert(MatEqual(Z_gpu_1, Z, 1e-10));
 
     MatFree(&X);
