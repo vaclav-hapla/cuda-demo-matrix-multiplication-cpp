@@ -6,5 +6,5 @@
 * [x] revisit .vscode/
 * [ ] commit hook - format
 * [ ] go through the implementation again, particularly the kernel
-* [ ] make public
+* [x] make public
 * [ ] C++ wrapper or standalone library
