@@ -69,10 +69,13 @@ __global__ void MatMult_optimized(Mat MatA, Mat MatB, Mat MatC)
     int w = blockDim.x;
     int W = MatA.width / w;
 
-    float* Asubs = (float*)sharedMemory;
-    float* Bsubs = (float*)&(sharedMemory[w * w * sizeof(float)]);
-
     Mat Asub, Bsub, Csub;
+
+    Mat Asub_s, Bsub_s;
+    MatInit(&Asub_s, w, w);
+    MatInit(&Bsub_s, w, w);
+    Asub_s.elements = (float*)sharedMemory;
+    Bsub_s.elements = (float*)&(sharedMemory[w * w * sizeof(float)]);
 
     MatGetSubMatrix(&MatC, R, C, w, &Csub);
     // Each thread computes one element of Csub
@@ -82,13 +85,11 @@ __global__ void MatMult_optimized(Mat MatA, Mat MatB, Mat MatC)
         MatGetSubMatrix(&MatA, R, K, w, &Asub);
         MatGetSubMatrix(&MatB, K, C, w, &Bsub);
         __syncthreads();
-        Asubs[r * w + c] = MatGetElement(&Asub, r, c);
-        Bsubs[r * w + c] = MatGetElement(&Bsub, r, c);
+        MatCopyElement(&Asub, &Asub_s, r, c);
+        MatCopyElement(&Bsub, &Bsub_s, r, c);
         __syncthreads();
         // Csub_{r,c} = \sum_{k=0}^{w-1} A_{r,k} B_{k,c}
-        for (int k = 0; k < w; k++) {
-            Csub_rc += Asubs[r * w + k] * Bsubs[k * w + c];
-        }
+        Csub_rc += MatMultElement(&Asub, &Bsub, r, c);
     }
     MatSetElement(&Csub, r, c, Csub_rc);
 }
