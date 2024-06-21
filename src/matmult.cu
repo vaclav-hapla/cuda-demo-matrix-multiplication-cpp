@@ -46,7 +46,7 @@ void MatFree(Mat** X)
 }
 
 // Matrix multiplication kernel called by MatMultGPU() - basic version
-__global__ void MatMult_k0(Mat A, Mat B, Mat C)
+__global__ void MatMult_naive(Mat A, Mat B, Mat C)
 {
     // Each thread computes one element of C
     int r = blockIdx.y * blockDim.y + threadIdx.y;
@@ -58,7 +58,7 @@ __global__ void MatMult_k0(Mat A, Mat B, Mat C)
 // Should be run this way:
 // size_t sharedMemSize = 2 * BLOCK_SIZE * BLOCK_SIZE * sizeof(float); // Total size for As and Bs
 // MatMulKernel<<<gridDim, blockDim, sharedMemSize>>>(A, B, C);
-__global__ void MatMult_k1(Mat MatA, Mat MatB, Mat MatC)
+__global__ void MatMult_optimized(Mat MatA, Mat MatB, Mat MatC)
 {
     extern __shared__ char sharedMemory[];
 
@@ -118,9 +118,9 @@ void MatMultGPU(const Mat* A, const Mat* B, Mat* C, bool optimized)
     dim3 dimGrid(B->width / dimBlock.x, A->height / dimBlock.y);
     if (optimized) {
         size_t sharedMemSize = 2 * dimBlock.x * dimBlock.y * sizeof(float); // Total size for As and Bs
-        MatMult_k1<<<dimGrid, dimBlock, sharedMemSize>>>(*d_A, *d_B, *d_C);
+        MatMult_optimized<<<dimGrid, dimBlock, sharedMemSize>>>(*d_A, *d_B, *d_C);
     } else {
-        MatMult_k0<<<dimGrid, dimBlock>>>(*d_A, *d_B, *d_C);
+        MatMult_naive<<<dimGrid, dimBlock>>>(*d_A, *d_B, *d_C);
     }
 
     // Read C from device memory
