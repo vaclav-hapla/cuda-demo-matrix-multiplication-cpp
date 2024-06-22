@@ -75,9 +75,11 @@ Mat* MatCreateGPU(int height, int width);
 // Deallocate a matrix including its elements
 void MatFree(Mat** X);
 
+// Matrix multiplication A * B = C with naive or optimized GPU kernel
 // Matrix dimensions are assumed to be multiples of BLOCK_SIZE
 void MatMultGPU(const Mat* A, const Mat* B, Mat* C, bool optimized);
 
+// Matrix multiplication A * B = C on host
 // Matrix dimensions are assumed to be multiples of BLOCK_SIZE
 void MatMultHost(const Mat* A, const Mat* B, Mat* C);
 
