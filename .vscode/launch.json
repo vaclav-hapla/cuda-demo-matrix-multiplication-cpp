@@ -5,7 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "GDB Launch",
+            "name": "CUDA C++: Launch",
+            "type": "cuda-gdb",
+            "request": "launch",
+            "program": "${fileWorkspaceFolder}/bin/tests/test00",
+            "cwd": "${fileWorkspaceFolder}",
+            "preLaunchTask": "make",
+        },
+        {
+            "name": "GDB: Launch",
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileWorkspaceFolder}/bin/tests/test00",
