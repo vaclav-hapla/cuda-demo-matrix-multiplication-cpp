@@ -21,24 +21,29 @@
     ],
     "tasks": [
         {
-            "type": "shell",
             "label": "reveal_cwd",
+            "type": "shell",
             "command": "# running in ${cwd}",
-            "problemMatcher": []
         },
         {
-            "type": "shell",
             "label": "make with selected command",
+            "type": "shell",
             "command": ".vscode/run_make.sh \"${input:build_command}\"",
+            "problemMatcher": [
+                "$nvcc"
+            ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
         },
         {
-            "type": "shell",
             "label": "make",
+            "type": "shell",
             "command": ".vscode/run_make.sh \"${default_make_target}\"",
+            "problemMatcher": [
+                "$nvcc"
+            ],
             "group": {
                 "kind": "build",
                 "isDefault": false
