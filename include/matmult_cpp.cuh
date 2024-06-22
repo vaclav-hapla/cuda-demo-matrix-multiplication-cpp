@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cassert>
 #include <cuda_runtime.h>
+
+#include <cassert>
 #include <iostream>
 #include <utility>
 
@@ -30,8 +31,6 @@ class Matrix {
         this->elements_cudaMalloc = nullptr;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const Matrix& mat);
-
 public:
     // Constructor to create a matrix, with optional host and GPU allocation
     __device__ __host__ Matrix(int height, int width, bool allocateHost = true, bool allocateGPU = false, int blockSize = 4)
@@ -58,6 +57,7 @@ public:
         }
     }
 
+    // Constructor to create a matrix with pre-allocated elements
     __device__ __host__ Matrix(int height, int width, float elements[], int blockSize = 4)
         : width(width)
         , height(height)
@@ -82,6 +82,7 @@ public:
     {
     }
 
+    // Copy-assignment operator
     __device__ __host__ Matrix& operator=(const Matrix& other)
     {
         width     = other.width;
@@ -95,6 +96,7 @@ public:
         return *this;
     }
 
+    // Destructor
     __device__ __host__ ~Matrix()
     {
         if (elements_malloc) {
@@ -105,11 +107,19 @@ public:
         }
     }
 
-    __device__ __host__ int    getWidth() const { return width; }
-    __device__ __host__ int    getHeight() const { return height; }
-    __device__ __host__ size_t sizeInBytes() const { return height * width * sizeof(float); }
-    __device__ __host__ int    getBlockSize() const { return blockSize; }
+    // Get the matrix width (number of columns)
+    __device__ __host__ int getWidth() const { return width; }
 
+    // Get the matrix height (number of rows)
+    __device__ __host__ int getHeight() const { return height; }
+
+    // Get the block size
+    __device__ __host__ int getBlockSize() const { return blockSize; }
+
+    // Get the element array size in bytes
+    __device__ __host__ size_t sizeInBytes() const { return height * width * sizeof(float); }
+
+    // Get the grid and block dimensions
     std::pair<dim3, dim3> getGridAndBlockDim() const
     {
         dim3 blockDim(blockSize, blockSize);
@@ -117,9 +127,8 @@ public:
         return std::make_pair(gridDim, blockDim);
     }
 
+    // Get the elements; the array should not be modified
     __device__ __host__ const float* getElements() { return elements; }
-
-    __device__ __host__ void setElements(float* elements) { this->elements = elements; }
 
     // Get a matrix element
     __device__ __host__ inline float getElement(int r, int c) const { return elements[r * stride + c]; }
@@ -152,6 +161,7 @@ public:
         return C_rc;
     }
 
+    // Check if all elements are zero
     bool isZero() const;
 
     // Matrix dimensions are assumed to be multiples of BLOCK_SIZE
@@ -162,4 +172,6 @@ public:
 
     // Compare two matrices up to a given tolerance
     bool equal(const Matrix& B, float tol) const;
+
+    friend std::ostream& operator<<(std::ostream& os, const Matrix& mat);
 };
