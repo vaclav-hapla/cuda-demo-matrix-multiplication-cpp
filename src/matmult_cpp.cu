@@ -70,9 +70,8 @@ void Matrix::multGPU(const Matrix& A, const Matrix& B, bool optimized)
     // Allocate C in device memory
     Matrix d_C(this->height, this->width, false, true);
 
-    // Invoke kernel
-    dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
-    dim3 dimGrid(B.width / dimBlock.x, A.height / dimBlock.y);
+    auto [dimGrid, dimBlock] = this->getGridAndBlockDim();
+
     if (optimized) {
         size_t sharedMemSize = 2 * dimBlock.x * dimBlock.y * sizeof(float); // Total size for As and Bs
         MatMult_cpp_optimized<<<dimGrid, dimBlock, sharedMemSize>>>(d_A, d_B, d_C);

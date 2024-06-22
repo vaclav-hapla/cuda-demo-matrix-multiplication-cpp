@@ -3,9 +3,7 @@
 #include <cassert>
 #include <cuda_runtime.h>
 #include <iostream>
-
-// Thread block size
-#define BLOCK_SIZE 4
+#include <utility>
 
 // Dense matrix structure.
 // Matrices are stored in row-major order:
@@ -13,17 +11,19 @@
 class Matrix {
     int    width;
     int    height;
+    int    blockSize;
     int    stride;
     float* elements;
     float* elements_malloc;
     float* elements_cudaMalloc;
 
     // Initialize inner matrix fields without allocating its elements
-    __device__ __host__ inline void init(int height, int width)
+    __device__ __host__ inline void init(int height, int width, int blockSize)
     {
-        this->height = height;
-        this->width  = width;
-        this->stride = width;
+        this->height    = height;
+        this->width     = width;
+        this->blockSize = blockSize;
+        this->stride    = width;
 
         this->elements            = nullptr;
         this->elements_malloc     = nullptr;
@@ -34,9 +34,10 @@ class Matrix {
 
 public:
     // Constructor to create a matrix, with optional host and GPU allocation
-    __device__ __host__ Matrix(int height, int width, bool allocateHost = true, bool allocateGPU = false)
+    __device__ __host__ Matrix(int height, int width, bool allocateHost = true, bool allocateGPU = false, int blockSize = 4)
         : width(width)
         , height(height)
+        , blockSize(blockSize)
         , stride(width)
         , elements(nullptr)
         , elements_malloc(nullptr)
@@ -57,9 +58,10 @@ public:
         }
     }
 
-    __device__ __host__ Matrix(int height, int width, float elements[])
+    __device__ __host__ Matrix(int height, int width, float elements[], int blockSize = 4)
         : width(width)
         , height(height)
+        , blockSize(blockSize)
         , stride(width)
         , elements(elements)
         , elements_malloc(nullptr)
@@ -72,6 +74,7 @@ public:
     __device__ __host__ Matrix(const Matrix& other)
         : width(other.width)
         , height(other.height)
+        , blockSize(other.blockSize)
         , stride(other.stride)
         , elements(other.elements)
         , elements_malloc(nullptr)
@@ -81,10 +84,12 @@ public:
 
     __device__ __host__ Matrix& operator=(const Matrix& other)
     {
-        width               = other.width;
-        height              = other.height;
-        stride              = other.stride;
-        elements            = other.elements;
+        width     = other.width;
+        height    = other.height;
+        blockSize = other.blockSize;
+        stride    = other.stride;
+        elements  = other.elements;
+
         elements_malloc     = nullptr;
         elements_cudaMalloc = nullptr;
         return *this;
@@ -103,6 +108,14 @@ public:
     __device__ __host__ int    getWidth() const { return width; }
     __device__ __host__ int    getHeight() const { return height; }
     __device__ __host__ size_t sizeInBytes() const { return height * width * sizeof(float); }
+    __device__ __host__ int    getBlockSize() const { return blockSize; }
+
+    std::pair<dim3, dim3> getGridAndBlockDim() const
+    {
+        dim3 blockDim(blockSize, blockSize);
+        dim3 gridDim((width + blockSize - 1) / blockSize, (height + blockSize - 1) / blockSize);
+        return std::make_pair(gridDim, blockDim);
+    }
 
     __device__ __host__ const float* getElements() { return elements; }
 
@@ -123,7 +136,7 @@ public:
     __device__ __host__ inline void getSubMatrix(int R, int C, int blockSize, Matrix& Asub) const
     {
         assert(Asub.elements_cudaMalloc == nullptr && Asub.elements_malloc == nullptr);
-        Asub.init(blockSize, blockSize);
+        Asub.init(blockSize, blockSize, blockSize);
         Asub.stride   = stride;
         Asub.elements = &(elements[R * stride * blockSize + C * blockSize]);
     }
