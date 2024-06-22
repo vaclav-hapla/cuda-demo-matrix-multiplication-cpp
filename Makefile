@@ -19,7 +19,7 @@ CPPFLAGS := -I$(INCLUDE_DIR)
 CFLAGS := -g -O1 -std=c11 -fPIC $(CPPFLAGS)
 NVCCFLAGS := -g -O1 --gpu-architecture=sm_89 -Xcompiler -fPIC $(CPPFLAGS)
 LDFLAGS := -shared
-LIBS := -L$(LIB_DIR) -Wl,-rpath,$(LIB_DIR) -l$(LIB_NAME) -L/usr/local/cuda/lib64 -lcudart
+LIBS = -L$(LIB_DIR) -Wl,-rpath,$(realpath $(LIB_DIR)) -l$(LIB_NAME) -L/usr/local/cuda/lib64 -lcudart
 
 
 #### INTERNAL VARIABLES ####
