@@ -14,7 +14,7 @@ void MatFillY(Mat* X)
 {
     for (int r = 0; r < X->height; r++)
         for (int c = 0; c < X->width; c++) {
-            MatSetElement(X, r, c, (float)r * X->width + c);
+            MatSetElement(X, r, c, (float)r * X->width + c + 1.0);
         }
 }
 
