@@ -1,8 +1,6 @@
 #include <assert.h>
 
-#include "matmult.cuh"
-
-// TODO this could be .c not .cu if the API was more isolated from CUDA
+#include "matmult.h"
 
 void MatFillX(Mat* X)
 {
