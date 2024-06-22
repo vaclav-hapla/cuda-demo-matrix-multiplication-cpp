@@ -17,9 +17,9 @@ NVCC := nvcc
 CPPFLAGS := -I$(INCLUDE_DIR)
 # TODO: add optimization flags, including -DNDEBUG, conditionally
 CFLAGS := -g -O0 -std=c11 -fPIC $(CPPFLAGS)
-NVCCFLAGS := -g -G -O0 --gpu-architecture=sm_89 -Xcompiler -fPIC $(CPPFLAGS)
-LDFLAGS := -shared
-LIBS = -L$(LIB_DIR) -Wl,-rpath,$(realpath $(LIB_DIR)) -l$(LIB_NAME) -L/usr/local/cuda/lib64 -lcudart
+NVCCFLAGS := -dc -g -G -O0 --gpu-architecture=sm_89 -Xcompiler -fPIC $(CPPFLAGS)
+LDFLAGS := --gpu-architecture=sm_89
+LIBS := -L$(LIB_DIR) -Xlinker -rpath -Xlinker $(PWD)/$(LIB_DIR) -l$(LIB_NAME) -L/usr/local/cuda/lib64 -lcudart
 
 
 #### INTERNAL VARIABLES ####
@@ -67,6 +67,7 @@ print:
 	@echo CFLAGS=$(CFLAGS)
 	@echo NVCCFLAGS=$(NVCCFLAGS)
 	@echo LDFLAGS=$(LDFLAGS)
+	@echo LIBS=$(LIBS)
 	@echo
 	@echo SRC_DIR=$(SRC_DIR)
 	@echo BUILD_DIR=$(BUILD_DIR)
@@ -92,7 +93,7 @@ print:
 # Rule to build the shared library
 $(OUTPUT_LIB): $(OBJS)
 	@mkdir -p $(dir $@)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS)
+	$(NVCC) -shared $(LDFLAGS) -o $@ $(OBJS)
 
 # Rule to compile .c files into the build directory
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
@@ -112,7 +113,7 @@ $(BUILD_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.c
 # Rule to link test executables
 $(BIN_DIR)/$(TEST_DIR)/%: $(BUILD_DIR)/$(TEST_DIR)/%.o $(OUTPUT_LIB)
 	@mkdir -p $(dir $@)
-	$(CC) -o $@ $< $(LIBS)
+	$(NVCC) $(LDFLAGS) -o $@ $< $(LIBS)
 
 # Pattern rule to run individual test executables
 .PHONY: %.run
