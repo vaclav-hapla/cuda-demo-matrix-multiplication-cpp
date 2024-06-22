@@ -1,5 +1,7 @@
 #pragma once
 
+extern "C" { // prevent C++ name mangling; this is a C-style API header and we want to use it in C code
+
 #include <assert.h>
 #include <cuda_runtime.h>
 
@@ -45,3 +47,5 @@ __device__ __host__ inline float MatMultElement(const Mat* A, const Mat* B, int 
     }
     return C_rc;
 }
+
+} // extern "C"
