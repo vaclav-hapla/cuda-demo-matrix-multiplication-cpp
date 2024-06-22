@@ -37,9 +37,12 @@ OBJS := $(SRCS_C:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 OBJS += $(SRCS_CU:$(SRC_DIR)/%.cu=$(BUILD_DIR)/%.o)
 
 # Find all test source files in TEST_DIR
-TEST_SRCS := $(wildcard $(TEST_DIR)/test*.c)
-TEST_OBJS := $(TEST_SRCS:$(TEST_DIR)/%.c=$(BUILD_DIR)/$(TEST_DIR)/%.o)
-TEST_EXES := $(TEST_SRCS:$(TEST_DIR)/%.c=$(BIN_DIR)/$(TEST_DIR)/%)
+TEST_SRCS_C := $(wildcard $(TEST_DIR)/test*.c)
+TEST_SRCS_CU := $(wildcard $(TEST_DIR)/test*.cu)
+TEST_SRCS := $(TEST_SRCS_C) $(TEST_SRCS_CU)
+TEST_OBJS := $(TEST_SRCS_C:$(TEST_DIR)/%.c=$(BUILD_DIR)/$(TEST_DIR)/%.o)
+TEST_OBJS += $(TEST_SRCS_CU:$(TEST_DIR)/%.cu=$(BUILD_DIR)/$(TEST_DIR)/%.o)
+TEST_EXES := $(TEST_OBJS:$(BUILD_DIR)/$(TEST_DIR)/%.o=$(BIN_DIR)/$(TEST_DIR)/%)
 
 
 #### COMMANDS ####
@@ -109,6 +112,11 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cu
 $(BUILD_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
+
+# Rule to compile test .cu files into the build directory
+$(BUILD_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.cu
+	@mkdir -p $(dir $@)
+	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
 # Rule to link test executables
 $(BIN_DIR)/$(TEST_DIR)/%: $(BUILD_DIR)/$(TEST_DIR)/%.o $(OUTPUT_LIB)
