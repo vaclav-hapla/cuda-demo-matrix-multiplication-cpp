@@ -16,8 +16,8 @@ CC := gcc
 NVCC := nvcc
 CPPFLAGS := -I$(INCLUDE_DIR)
 # TODO: add optimization flags, including -DNDEBUG, conditionally
-CFLAGS := -g -O1 -std=c11 -fPIC $(CPPFLAGS)
-NVCCFLAGS := -g -O1 --gpu-architecture=sm_89 -Xcompiler -fPIC $(CPPFLAGS)
+CFLAGS := -g -O0 -std=c11 -fPIC $(CPPFLAGS)
+NVCCFLAGS := -g -O0 --gpu-architecture=sm_89 -Xcompiler -fPIC $(CPPFLAGS)
 LDFLAGS := -shared
 LIBS = -L$(LIB_DIR) -Wl,-rpath,$(realpath $(LIB_DIR)) -l$(LIB_NAME) -L/usr/local/cuda/lib64 -lcudart
 
