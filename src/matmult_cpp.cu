@@ -3,15 +3,49 @@
 
 #include "matmult_cpp.cuh"
 
+__global__ void MatIsZero_kernel(Matrix A, int* flg)
+{
+    int r = blockIdx.y * blockDim.y + threadIdx.y;
+    int c = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (r < A.getHeight() && c < A.getWidth()) {
+        atomicAnd(flg, A.getElement(r, c) == 0);
+    }
+}
+
+bool Matrix::isZero() const
+{
+    if (this->elements_cudaMalloc) {
+        auto [gridDim, blockDim] = getGridAndBlockDim();
+
+        int* flg = nullptr;
+        cudaMallocManaged(&flg, sizeof(int));
+        *flg = 1;
+        MatIsZero_kernel<<<gridDim, blockDim>>>(*this, flg);
+        cudaDeviceSynchronize();
+        bool result = *flg;
+        cudaFree(flg);
+        return result;
+    } else {
+        for (int r = 0; r < height; r++) {
+            for (int c = 0; c < width; c++) {
+                if (getElement(r, c) != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+
 // Matrix multiplication kernel called by Mat::multGPU() - basic version
 __global__ void MatMult_cpp_naive(Matrix A, Matrix B, Matrix C)
 {
     // Each thread computes one element of C
     int r = blockIdx.y * blockDim.y + threadIdx.y;
     int c = blockIdx.x * blockDim.x + threadIdx.x;
-    assert(A.getElement(r, c) != 0);
+
     C.setElement(r, c, A.multElement(B, r, c));
-    assert(C.getElement(r, c) != 0);
 }
 
 // Matrix multiplication kernel called by Mat::multGPU() - optimized version
@@ -72,6 +106,10 @@ void Matrix::multGPU(const Matrix& A, const Matrix& B, bool optimized)
 
     auto [dimGrid, dimBlock] = this->getGridAndBlockDim();
 
+#ifndef NDEBUG
+    assert(d_C.isZero());
+#endif
+
     if (optimized) {
         size_t sharedMemSize = 2 * dimBlock.x * dimBlock.y * sizeof(float); // Total size for As and Bs
         MatMult_cpp_optimized<<<dimGrid, dimBlock, sharedMemSize>>>(d_A, d_B, d_C);
@@ -79,8 +117,23 @@ void Matrix::multGPU(const Matrix& A, const Matrix& B, bool optimized)
         MatMult_cpp_naive<<<dimGrid, dimBlock>>>(d_A, d_B, d_C);
     }
 
+#ifndef NDEBUG
+    bool isAZero = d_A.isZero();
+    bool isBZero = d_B.isZero();
+    bool isCZero = d_C.isZero();
+    if (isAZero || isBZero) {
+        assert(isCZero);
+    } else {
+        assert(!isCZero);
+    }
+#endif
+
     // Read C from device memory
     cudaMemcpy(this->elements, d_C.elements, this->sizeInBytes(), cudaMemcpyDeviceToHost);
+
+#ifndef NDEBUG
+    assert(isZero() == isCZero);
+#endif
 }
 
 void Matrix::multHost(const Matrix& A, const Matrix& B)
