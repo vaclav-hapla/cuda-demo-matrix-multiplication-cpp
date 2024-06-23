@@ -10,13 +10,14 @@
 // Matrices are stored in row-major order:
 //     M(row, col) = *(M.elements + row * M.stride + col)
 class Matrix {
-    int    width;
-    int    height;
-    int    blockSize;
-    int    stride;
-    float* elements;
-    float* elements_malloc;
-    float* elements_cudaMalloc;
+    int width;
+    int height;
+    int blockSize;
+    int stride;
+
+    float* elements            = nullptr;
+    float* elements_malloc     = nullptr;
+    float* elements_cudaMalloc = nullptr;
 
     // Initialize inner matrix fields without allocating its elements
     __device__ __host__ inline void init(int height, int width, int blockSize)
@@ -25,10 +26,6 @@ class Matrix {
         this->width     = width;
         this->blockSize = blockSize;
         this->stride    = width;
-
-        this->elements            = nullptr;
-        this->elements_malloc     = nullptr;
-        this->elements_cudaMalloc = nullptr;
     }
 
 public:
@@ -38,9 +35,6 @@ public:
         , height(height)
         , blockSize(blockSize)
         , stride(width)
-        , elements(nullptr)
-        , elements_malloc(nullptr)
-        , elements_cudaMalloc(nullptr)
     {
 #ifndef __CUDA_ARCH__
         if (allocateHost && allocateGPU) {
@@ -64,8 +58,6 @@ public:
         , blockSize(blockSize)
         , stride(width)
         , elements(elements)
-        , elements_malloc(nullptr)
-        , elements_cudaMalloc(nullptr)
     {
     }
 
@@ -77,8 +69,6 @@ public:
         , blockSize(other.blockSize)
         , stride(other.stride)
         , elements(other.elements)
-        , elements_malloc(nullptr)
-        , elements_cudaMalloc(nullptr)
     {
     }
 
