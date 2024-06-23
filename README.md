@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Makefile CI](https://github.com/haplav/cuda-demo-matrix-multiplication/actions/workflows/makefile.yml/badge.svg)](https://github.com/haplav/cuda-demo-matrix-multiplication/actions/workflows/makefile.yml)
 
-* This repo contains a simple C library implementing matrix-matrix multiply
+* This repo contains a simple library with a separate C and C++ API, implementing matrix-matrix multiply
     - Serves mainly to show my capabilities
 * There are three implementations:
     1. host: `MatMultHost()`,
