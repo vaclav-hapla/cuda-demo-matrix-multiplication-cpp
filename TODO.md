@@ -7,4 +7,4 @@
 * [ ] commit hook - format
 * [ ] go through the implementation again, particularly the kernel
 * [x] make public
-* [ ] C++ wrapper or standalone library
+* [x] C++ wrapper or standalone library
