@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cmath>
+#include <iomanip>
 
 #include "matmult_cpp.cuh"
 
@@ -149,16 +150,26 @@ void Matrix::multHost(const Matrix& A, const Matrix& B)
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const Matrix& mat)
+std::ostream& operator<<(std::ostream& os, const Matrix& A)
 {
+    // Save the current format settings
+    std::ios oldState(nullptr);
+    oldState.copyfmt(os);
+
     os << "[\n";
-    for (int i = 0; i < mat.height; i++) {
-        for (int j = 0; j < mat.width - 1; j++) {
-            os << " " << std::fixed << mat.getElement(i, j) << " ";
+    for (int i = 0; i < A.height; ++i) {
+        for (int j = 0; j < A.width; ++j) {
+            os << std::fixed << std::setw(5) << std::setprecision(1) << A.getElement(i, j);
+            if (j < A.width - 1) {
+                os << " ";
+            }
         }
-        os << " " << std::fixed << mat.getElement(i, mat.width - 1) << "\n";
+        os << "\n";
     }
     os << "]\n";
+
+    // Restore the original format settings
+    os.copyfmt(oldState);
     return os;
 }
 

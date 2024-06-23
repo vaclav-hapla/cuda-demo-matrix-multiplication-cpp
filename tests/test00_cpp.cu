@@ -31,7 +31,7 @@ int main()
 
     Matrix X(M, M);
     MatFillX(X);
-    std::cout << "X: " << X << std::endl;
+    std::cout << "X = " << X << std::endl;
 
     {
         Matrix X_copy = X;
@@ -41,11 +41,11 @@ int main()
 
     Matrix Y(M, N);
     MatFillY(Y);
-    std::cout << "Y: " << Y << std::endl;
+    std::cout << "Y = " << Y << std::endl;
 
     Matrix Z(M, N);
     Z.multHost(X, Y);
-    std::cout << "Z: " << Z << std::endl;
+    std::cout << "Z = " << Z << std::endl;
 
     assert(!Y.equal(Z, 1e-10));
 
@@ -55,12 +55,12 @@ int main()
 
     Matrix Z_gpu_0(M, N);
     Z_gpu_0.multGPU(X, Y, false);
-    std::cout << "Z_gpu_0: " << Z_gpu_0 << std::endl;
+    std::cout << "Z_gpu_0 = " << Z_gpu_0 << std::endl;
     assert(Z_gpu_0.equal(Z, 1e-10));
 
     Matrix Z_gpu_1(M, N);
     Z_gpu_1.multGPU(X, Y, true);
-    std::cout << "Z_gpu_1: " << Z_gpu_1 << std::endl;
+    std::cout << "Z_gpu_1 = " << Z_gpu_1 << std::endl;
     assert(Z_gpu_1.equal(Z, 1e-10));
 
     return 0;
