@@ -142,6 +142,7 @@ void MatMultHost(const Mat* A, const Mat* B, Mat* C)
         }
     }
 }
+
 void MatPrint(Mat* A, const char name[])
 {
     printf("%s = [\n", name);
