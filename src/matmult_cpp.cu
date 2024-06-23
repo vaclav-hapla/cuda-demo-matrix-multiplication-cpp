@@ -156,7 +156,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix& A)
     std::ios oldState(nullptr);
     oldState.copyfmt(os);
 
-    os << "[\n";
+    os << A.name << " = [\n";
     for (int i = 0; i < A.height; ++i) {
         for (int j = 0; j < A.width; ++j) {
             os << std::fixed << std::setw(5) << std::setprecision(1) << A.getElement(i, j);

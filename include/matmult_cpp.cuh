@@ -10,6 +10,9 @@
 // Matrices are stored in row-major order:
 //     M(row, col) = *(M.elements + row * M.stride + col)
 class Matrix {
+    // std::string currently can't be used in device code
+    const char* name = "";
+
     int width;
     int height;
     int blockSize;
@@ -51,6 +54,12 @@ public:
         }
     }
 
+    Matrix(const std::string& name, int height, int width, bool allocateHost = true, bool allocateGPU = false, int blockSize = 4)
+        : Matrix(height, width, allocateHost, allocateGPU, blockSize)
+    {
+        setName(name);
+    }
+
     // Constructor to create a matrix with pre-allocated elements
     __device__ __host__ Matrix(int height, int width, float elements[], int blockSize = 4)
         : width(width)
@@ -61,10 +70,17 @@ public:
     {
     }
 
+    Matrix(const std::string& name, int height, int width, float elements[], int blockSize = 4)
+        : Matrix(height, width, false, false, blockSize)
+    {
+        setName(name);
+    }
+
     // In copy constructor, we make sure elements_malloc and elements_cudaMalloc are not copied
     // and hence they are not deallocated in the destructor
     __device__ __host__ Matrix(const Matrix& other)
-        : width(other.width)
+        : name(other.name)
+        , width(other.width)
         , height(other.height)
         , blockSize(other.blockSize)
         , stride(other.stride)
@@ -75,6 +91,7 @@ public:
     // Copy-assignment operator
     __device__ __host__ Matrix& operator=(const Matrix& other)
     {
+        name      = other.name;
         width     = other.width;
         height    = other.height;
         blockSize = other.blockSize;
@@ -96,6 +113,18 @@ public:
             cudaFree(elements_cudaMalloc);
         }
     }
+
+    // Get the matrix name as std::string
+    std::string getName() const { return std::string(this->name); }
+
+    // Get the matrix name as char*
+    const char* getNameCStr() const { return name; }
+
+    // Set the matrix name via std::string
+    void setName(const std::string& name) { this->name = name.c_str(); }
+
+    // Set the matrix name via char*
+    __device__ __host__ void setName(const char name[]) { this->name = name; }
 
     // Get the matrix width (number of columns)
     __device__ __host__ int getWidth() const { return width; }
