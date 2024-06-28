@@ -1,7 +1,7 @@
 # CUDA Demo: Matrix Multiplication
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Makefile CI](https://github.com/haplav/cuda-demo-matrix-multiplication/actions/workflows/makefile.yml/badge.svg)](https://github.com/haplav/cuda-demo-matrix-multiplication/actions/workflows/makefile.yml)
+[![Makefile CI](https://github.com/vaclav-hapla/cuda-demo-matrix-multiplication-cpp/actions/workflows/makefile.yml/badge.svg)](https://github.com/vaclav-hapla/cuda-demo-matrix-multiplication-cpp/actions/workflows/makefile.yml)
 
 * This repo contains a simple library with a separate C and C++ API, implementing matrix-matrix multiply
     - Serves mainly to show my capabilities
@@ -18,6 +18,5 @@
     - [`.clang-format`](.clang-format) file for unified formatting using clang-format
     - [`.vscode/`](.vscode/) for convenient building and debugging in VS Code
     - [Gitlab Workflow](.github/workflows/makefile.yml) running `make test` in a self-hosted CUDA-enabled runner
-      - I've set up such a [runner](https://github.com/haplav/cuda-demo-matrix-multiplication/actions/runners?tab=self-hosted)
-        running on an ETH workstation and connected to [the project on GitHub](https://github.com/haplav/cuda-demo-matrix-multiplication)
+      - I've set up such a runner on an ETH workstation and connected to [the project on GitHub](https://github.com/vaclav-hapla/cuda-demo-matrix-multiplication-cpp)
     - [MIT License](LICENSE)

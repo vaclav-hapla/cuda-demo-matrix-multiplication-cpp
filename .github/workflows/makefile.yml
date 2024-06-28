@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, linux, x64, GPU]
+    runs-on: [self-hosted, linux, x64, gpu]
     container:
       image: nvidia/cuda:12.5.0-devel-ubuntu22.04
       options: --gpus all
