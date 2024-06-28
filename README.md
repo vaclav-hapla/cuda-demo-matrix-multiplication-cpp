@@ -4,8 +4,8 @@
 [![Makefile CI](https://github.com/vaclav-hapla/cuda-demo-matrix-multiplication-cpp/actions/workflows/makefile.yml/badge.svg)](https://github.com/vaclav-hapla/cuda-demo-matrix-multiplication-cpp/actions/workflows/makefile.yml)
 
 * This repo contains a simple library with a separate C and C++ API, implementing matrix-matrix multiply
-    - Serves mainly to show my capabilities
-* There are three implementations:
+* Serves mainly for demonstration
+* There are three implementations of matrix-matrix multiply:
     1. host: `MatMultHost()`,
     2. naive GPU: `MatMultGPU()` with `MatMult_naive()` kernel
     3. optimized GPU: `MatMultGPU()` with `MatMult_optimized()` kernel (using blocks in shared memory)
