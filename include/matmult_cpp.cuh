@@ -152,8 +152,8 @@ public:
     // Get a matrix element
     __device__ __host__ float operator()(int r, int c) const { return elements[r * stride + c]; }
 
-    // Set a matrix element
-    __device__ __host__ void operator()(int r, int c, float value) { elements[r * stride + c] = value; }
+    // Get/set a matrix element via reference
+    __device__ __host__ float& operator()(int r, int c) { return elements[r * stride + c]; }
 
     // Get the blockSize x blockSize submatrix Asub of A,
     // located C submatrices to the right and R submatrices down

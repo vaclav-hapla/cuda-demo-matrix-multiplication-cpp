@@ -46,7 +46,7 @@ __global__ void MatMult_cpp_naive(const Matrix A, const Matrix B, Matrix C)
     int r = blockIdx.y * blockDim.y + threadIdx.y;
     int c = blockIdx.x * blockDim.x + threadIdx.x;
 
-    C(r, c, A.multElement(B, r, c));
+    C(r, c) = A.multElement(B, r, c);
 }
 
 // Matrix multiplication kernel called by Mat::multGPU() - optimized version
@@ -68,8 +68,8 @@ __global__ void MatMult_cpp_optimized(const Matrix MatA, const Matrix MatB, Matr
     Matrix Bsub(w, w, false);
     Matrix Csub(w, w, false);
 
-    const Matrix Asub_s(w, w, (float*)sharedMemory);
-    const Matrix Bsub_s(w, w, (float*)&(sharedMemory[w * w * sizeof(float)]));
+    Matrix Asub_s(w, w, (float*)sharedMemory);
+    Matrix Bsub_s(w, w, (float*)&(sharedMemory[w * w * sizeof(float)]));
 
     MatC.getSubMatrix(R, C, w, Csub);
     // Each thread computes one element of Csub
@@ -79,13 +79,13 @@ __global__ void MatMult_cpp_optimized(const Matrix MatA, const Matrix MatB, Matr
         MatA.getSubMatrix(R, K, w, Asub);
         MatB.getSubMatrix(K, C, w, Bsub);
         __syncthreads();
-        Asub_s(r, c, Asub(r, c));
-        Bsub_s(r, c, Bsub(r, c));
+        Asub_s(r, c) = Asub(r, c);
+        Bsub_s(r, c) = Bsub(r, c);
         __syncthreads();
         // Csub_{r,c} = \sum_{k=0}^{w-1} A_{r,k} B_{k,c}
         Csub_rc += Asub_s.multElement(Bsub_s, r, c);
     }
-    Csub(r, c, Csub_rc);
+    Csub(r, c) = Csub_rc;
 }
 
 void Matrix::multGPU(const Matrix& A, const Matrix& B, bool optimized)
@@ -145,7 +145,7 @@ void Matrix::multHost(const Matrix& A, const Matrix& B)
 
     for (int r = 0; r < A.height; r++) {
         for (int c = 0; c < B.width; c++) {
-            (*this)(r, c, A.multElement(B, r, c));
+            (*this)(r, c) = A.multElement(B, r, c);
         }
     }
 }
