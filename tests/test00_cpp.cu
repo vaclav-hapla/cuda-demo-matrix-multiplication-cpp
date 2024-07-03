@@ -3,15 +3,13 @@
 
 #include "matmult_cpp.cuh"
 
-// TODO this could be .c not .cu if the API was more isolated from CUDA
-
 void MatFillX(Matrix& X)
 {
     auto height = X.getHeight();
     auto width  = X.getWidth();
     for (int r = 0; r < height; r++)
         for (int c = 0; c < width; c++) {
-            X.setElement(r, c, (r + c == width - 1) ? 1.0 : 0.0);
+            X(r, c, (r + c == width - 1) ? 1.0 : 0.0);
         }
 }
 
@@ -21,7 +19,7 @@ void MatFillY(Matrix& X)
     auto width  = X.getWidth();
     for (int r = 0; r < height; r++)
         for (int c = 0; c < width; c++) {
-            X.setElement(r, c, (float)r * width + c + 1);
+            X(r, c, (float)r * width + c + 1);
         }
 }
 

@@ -10,7 +10,7 @@ __global__ void MatIsZero_kernel(Matrix A, int* flg)
     int c = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (r < A.getHeight() && c < A.getWidth()) {
-        atomicAnd(flg, A.getElement(r, c) == 0);
+        atomicAnd(flg, A(r, c) == 0);
     }
 }
 
@@ -30,7 +30,7 @@ bool Matrix::isZero() const
     } else {
         for (int r = 0; r < height; r++) {
             for (int c = 0; c < width; c++) {
-                if (getElement(r, c) != 0) {
+                if ((*this)(r, c) != 0) {
                     return false;
                 }
             }
@@ -46,7 +46,7 @@ __global__ void MatMult_cpp_naive(Matrix A, Matrix B, Matrix C)
     int r = blockIdx.y * blockDim.y + threadIdx.y;
     int c = blockIdx.x * blockDim.x + threadIdx.x;
 
-    C.setElement(r, c, A.multElement(B, r, c));
+    C(r, c, A.multElement(B, r, c));
 }
 
 // Matrix multiplication kernel called by Mat::multGPU() - optimized version
@@ -85,7 +85,7 @@ __global__ void MatMult_cpp_optimized(Matrix MatA, Matrix MatB, Matrix MatC)
         // Csub_{r,c} = \sum_{k=0}^{w-1} A_{r,k} B_{k,c}
         Csub_rc += Asub_s.multElement(Bsub_s, r, c);
     }
-    Csub.setElement(r, c, Csub_rc);
+    Csub(r, c, Csub_rc);
 }
 
 void Matrix::multGPU(const Matrix& A, const Matrix& B, bool optimized)
@@ -145,7 +145,7 @@ void Matrix::multHost(const Matrix& A, const Matrix& B)
 
     for (int r = 0; r < A.height; r++) {
         for (int c = 0; c < B.width; c++) {
-            this->setElement(r, c, A.multElement(B, r, c));
+            (*this)(r, c, A.multElement(B, r, c));
         }
     }
 }
@@ -159,7 +159,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix& A)
     os << A.name << " = [\n";
     for (int i = 0; i < A.height; ++i) {
         for (int j = 0; j < A.width; ++j) {
-            os << std::fixed << std::setw(5) << std::setprecision(1) << A.getElement(i, j);
+            os << std::fixed << std::setw(5) << std::setprecision(1) << A(i, j);
             if (j < A.width - 1) {
                 os << " ";
             }
@@ -179,7 +179,7 @@ bool Matrix::equal(const Matrix& B, float tol) const
         return false;
     for (int r = 0; r < height; r++)
         for (int c = 0; c < width; c++) {
-            if (fabs(getElement(r, c) - B.getElement(r, c)) > tol)
+            if (fabs((*this)(r, c) - B(r, c)) > tol)
                 return false;
         }
     return true;
