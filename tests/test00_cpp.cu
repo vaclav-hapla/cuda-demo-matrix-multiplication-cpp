@@ -31,14 +31,24 @@ int main()
     MatFillX(X);
     std::cout << X << std::endl;
 
+    // Test copy and move
     {
         Matrix X_copy = X;
         assert(X.getElements() == X_copy.getElements());
-
         std::string name = X_copy.getName();
         std::cout << name << std::endl;
         assert(name == "X");
     }
+    {
+        auto   elements = X.getElements();
+        Matrix X_moved  = std::move(X);
+        assert(X_moved.getElements() == elements);
+        assert(!X.getElements());
+        X = std::move(X_moved);
+        assert(X.getElements() == elements);
+        assert(!X_moved.getElements());
+    }
+
     assert(X.getElements());
 
     Matrix Y("Y", M, N);

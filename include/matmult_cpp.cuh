@@ -76,7 +76,8 @@ public:
         setName(name);
     }
 
-    // In copy constructor, we make sure elements_malloc and elements_cudaMalloc are not copied
+    // Copy constructor (shallow copy)
+    // We make sure elements_malloc and elements_cudaMalloc are not copied
     // and hence they are not deallocated in the destructor
     __device__ __host__ Matrix(const Matrix& other)
         : name(other.name)
@@ -88,7 +89,7 @@ public:
     {
     }
 
-    // Copy-assignment operator
+    // Copy-assignment operator (shallow copy)
     __device__ __host__ Matrix& operator=(const Matrix& other)
     {
         name      = other.name;
@@ -96,10 +97,45 @@ public:
         height    = other.height;
         blockSize = other.blockSize;
         stride    = other.stride;
-        elements  = other.elements;
 
+        elements            = other.elements;
         elements_malloc     = nullptr;
         elements_cudaMalloc = nullptr;
+        return *this;
+    }
+
+    // Move constructor
+    __device__ __host__ Matrix(Matrix&& other)
+        : name(other.name)
+        , width(other.width)
+        , height(other.height)
+        , blockSize(other.blockSize)
+        , stride(other.stride)
+        , elements(other.elements)
+        , elements_malloc(other.elements_malloc)
+        , elements_cudaMalloc(other.elements_cudaMalloc)
+    {
+        other.elements            = nullptr;
+        other.elements_malloc     = nullptr;
+        other.elements_cudaMalloc = nullptr;
+    }
+
+    // Move-assignment operator
+    __device__ __host__ Matrix& operator=(Matrix&& other)
+    {
+        name      = other.name;
+        width     = other.width;
+        height    = other.height;
+        blockSize = other.blockSize;
+        stride    = other.stride;
+
+        elements            = other.elements;
+        elements_malloc     = other.elements_malloc;
+        elements_cudaMalloc = other.elements_cudaMalloc;
+
+        other.elements            = nullptr;
+        other.elements_malloc     = nullptr;
+        other.elements_cudaMalloc = nullptr;
         return *this;
     }
 
