@@ -17,7 +17,7 @@ NVCC := nvcc
 CPPFLAGS := -I$(INCLUDE_DIR)
 # TODO: add optimization flags, including -DNDEBUG, conditionally
 CXXFLAGS := -g -O0 -std=c++20 -fPIC -MMD -MP $(CPPFLAGS)
-NVCCFLAGS := -dc -g -G -O0 --gpu-architecture=sm_89 -Xcompiler -fPIC --std=c++20 $(CPPFLAGS)
+NVCCFLAGS := -dc -g -G -O0 --gpu-architecture=sm_89 --std=c++20 -Xcompiler -fPIC -MMD -MP $(CPPFLAGS)
 LDFLAGS := --gpu-architecture=sm_89
 LIBS := -L$(LIB_DIR) -Xlinker -rpath -Xlinker $(PWD)/$(LIB_DIR) -l$(LIB_NAME) -L/usr/local/cuda/lib64 -lcudart
 
@@ -84,6 +84,7 @@ print:
 	@echo
 	@echo SRCS=$(SRCS)
 	@echo OBJS=$(OBJS)
+	@echo DEPS=$(DEPS)
 	@echo
 	@echo TEST_SRCS=$(TEST_SRCS)
 	@echo TEST_OBJS=$(TEST_OBJS)
