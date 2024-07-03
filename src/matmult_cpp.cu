@@ -79,8 +79,8 @@ __global__ void MatMult_cpp_optimized(Matrix MatA, Matrix MatB, Matrix MatC)
         MatA.getSubMatrix(R, K, w, Asub);
         MatB.getSubMatrix(K, C, w, Bsub);
         __syncthreads();
-        Asub.copyElement(Asub_s, r, c);
-        Bsub.copyElement(Bsub_s, r, c);
+        Asub_s(r, c, Asub(r, c));
+        Bsub_s(r, c, Bsub(r, c));
         __syncthreads();
         // Csub_{r,c} = \sum_{k=0}^{w-1} A_{r,k} B_{k,c}
         Csub_rc += Asub_s.multElement(Bsub_s, r, c);

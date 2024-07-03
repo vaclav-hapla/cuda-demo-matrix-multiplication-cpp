@@ -155,9 +155,6 @@ public:
     // Set a matrix element
     __device__ __host__ void operator()(int r, int c, float value) { elements[r * stride + c] = value; }
 
-    // Copy a matrix element
-    __device__ __host__ void copyElement(Matrix& B, int r, int c) const { B(r, c, (*this)(r, c)); }
-
     // Get the blockSize x blockSize submatrix Asub of A,
     // located C submatrices to the right and R submatrices down
     // from the upper-left corner of A.
