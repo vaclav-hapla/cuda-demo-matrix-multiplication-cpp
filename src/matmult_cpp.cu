@@ -4,7 +4,7 @@
 
 #include "matmult_cpp.cuh"
 
-__global__ void MatIsZero_kernel(Matrix A, int* flg)
+__global__ void MatIsZero_kernel(const Matrix A, int* flg)
 {
     int r = blockIdx.y * blockDim.y + threadIdx.y;
     int c = blockIdx.x * blockDim.x + threadIdx.x;
@@ -40,7 +40,7 @@ bool Matrix::isZero() const
 }
 
 // Matrix multiplication kernel called by Mat::multGPU() - basic version
-__global__ void MatMult_cpp_naive(Matrix A, Matrix B, Matrix C)
+__global__ void MatMult_cpp_naive(const Matrix A, const Matrix B, Matrix C)
 {
     // Each thread computes one element of C
     int r = blockIdx.y * blockDim.y + threadIdx.y;
@@ -53,7 +53,7 @@ __global__ void MatMult_cpp_naive(Matrix A, Matrix B, Matrix C)
 // Should be run this way:
 // size_t sharedMemSize = 2 * BLOCK_SIZE * BLOCK_SIZE * sizeof(float); // Total size for As and Bs
 // MatMult_optimized<<<gridDim, blockDim, sharedMemSize>>>(A, B, C);
-__global__ void MatMult_cpp_optimized(Matrix MatA, Matrix MatB, Matrix MatC)
+__global__ void MatMult_cpp_optimized(const Matrix MatA, const Matrix MatB, Matrix MatC)
 {
     extern __shared__ char sharedMemory[];
 
@@ -68,8 +68,8 @@ __global__ void MatMult_cpp_optimized(Matrix MatA, Matrix MatB, Matrix MatC)
     Matrix Bsub(w, w, false);
     Matrix Csub(w, w, false);
 
-    Matrix Asub_s(w, w, (float*)sharedMemory);
-    Matrix Bsub_s(w, w, (float*)&(sharedMemory[w * w * sizeof(float)]));
+    const Matrix Asub_s(w, w, (float*)sharedMemory);
+    const Matrix Bsub_s(w, w, (float*)&(sharedMemory[w * w * sizeof(float)]));
 
     MatC.getSubMatrix(R, C, w, Csub);
     // Each thread computes one element of Csub
