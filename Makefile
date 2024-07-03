@@ -16,7 +16,7 @@ CXX := g++
 NVCC := nvcc
 CPPFLAGS := -I$(INCLUDE_DIR)
 # TODO: add optimization flags, including -DNDEBUG, conditionally
-CXXFLAGS := -g -O0 -std=c++20 -fPIC $(CPPFLAGS)
+CXXFLAGS := -g -O0 -std=c++20 -fPIC -MMD -MP $(CPPFLAGS)
 NVCCFLAGS := -dc -g -G -O0 --gpu-architecture=sm_89 -Xcompiler -fPIC --std=c++20 $(CPPFLAGS)
 LDFLAGS := --gpu-architecture=sm_89
 LIBS := -L$(LIB_DIR) -Xlinker -rpath -Xlinker $(PWD)/$(LIB_DIR) -l$(LIB_NAME) -L/usr/local/cuda/lib64 -lcudart
@@ -35,6 +35,9 @@ SRCS := $(SRCS_CXX) $(SRCS_CU)
 # Convert source files to object files in the build directory
 OBJS := $(SRCS_CXX:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 OBJS += $(SRCS_CU:$(SRC_DIR)/%.cu=$(BUILD_DIR)/%.o)
+
+# Find all dependency files
+DEPS = $(OBJS:.o=.d)
 
 # Find all test source files in TEST_DIR
 TEST_SRCS_CXX := $(wildcard $(TEST_DIR)/test*.cpp)
@@ -92,6 +95,9 @@ print:
 
 
 #### RULES ####
+
+# Include all dependency files
+-include $(DEPS)
 
 # Rule to build the shared library
 $(OUTPUT_LIB): $(OBJS)
