@@ -158,12 +158,12 @@ public:
     // Get the blockSize x blockSize submatrix Asub of A,
     // located C submatrices to the right and R submatrices down
     // from the upper-left corner of A.
-    __device__ __host__ void getSubMatrix(int R, int C, int blockSize, Matrix& Asub) const
+    __device__ __host__ Matrix getSubMatrix(int R, int C, int blockSize) const
     {
-        assert(Asub.elements_cudaMalloc == nullptr && Asub.elements_malloc == nullptr);
-        Asub.init(blockSize, blockSize, blockSize);
+        Matrix Asub(blockSize, blockSize, false, false, blockSize);
         Asub.stride   = stride;
         Asub.elements = &(elements[R * stride * blockSize + C * blockSize]);
+        return Asub;
     }
 
     // Compute a single element C(r,c) of the matrix-matrix product C = A * B

@@ -64,20 +64,16 @@ __global__ void MatMult_cpp_optimized(const Matrix MatA, const Matrix MatB, Matr
     int w = blockDim.x;
     int W = MatA.getWidth() / w;
 
-    Matrix Asub(w, w, false);
-    Matrix Bsub(w, w, false);
-    Matrix Csub(w, w, false);
-
     Matrix Asub_s(w, w, (float*)sharedMemory);
     Matrix Bsub_s(w, w, (float*)&(sharedMemory[w * w * sizeof(float)]));
 
-    MatC.getSubMatrix(R, C, w, Csub);
+    auto Csub = MatC.getSubMatrix(R, C, w);
     // Each thread computes one element of Csub
     float Csub_rc = 0;
     // C_{R,C} = \sum_{K=0}^{W-1} A_{R,K} B_{K,C}
     for (int K = 0; K < W; K++) {
-        MatA.getSubMatrix(R, K, w, Asub);
-        MatB.getSubMatrix(K, C, w, Bsub);
+        const auto Asub = MatA.getSubMatrix(R, K, w);
+        const auto Bsub = MatB.getSubMatrix(K, C, w);
         __syncthreads();
         Asub_s(r, c) = Asub(r, c);
         Bsub_s(r, c) = Bsub(r, c);
