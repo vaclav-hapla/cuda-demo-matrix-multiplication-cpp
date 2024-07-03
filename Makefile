@@ -9,15 +9,15 @@ BIN_DIR := bin
 TEST_DIR := tests
 
 # Define the output shared library name
-LIB_NAME := cudamatmult
+LIB_NAME := cudamatmult++
 
 # Define the compilers and flags
-CC := gcc
+CXX := g++
 NVCC := nvcc
 CPPFLAGS := -I$(INCLUDE_DIR)
 # TODO: add optimization flags, including -DNDEBUG, conditionally
-CFLAGS := -g -O0 -std=c11 -fPIC $(CPPFLAGS)
-NVCCFLAGS := -dc -g -G -O0 --gpu-architecture=sm_89 -Xcompiler -fPIC $(CPPFLAGS)
+CXXFLAGS := -g -O0 -std=c++20 -fPIC $(CPPFLAGS)
+NVCCFLAGS := -dc -g -G -O0 --gpu-architecture=sm_89 -Xcompiler -fPIC --std=c++20 $(CPPFLAGS)
 LDFLAGS := --gpu-architecture=sm_89
 LIBS := -L$(LIB_DIR) -Xlinker -rpath -Xlinker $(PWD)/$(LIB_DIR) -l$(LIB_NAME) -L/usr/local/cuda/lib64 -lcudart
 
@@ -28,19 +28,19 @@ LIBS := -L$(LIB_DIR) -Xlinker -rpath -Xlinker $(PWD)/$(LIB_DIR) -l$(LIB_NAME) -L
 OUTPUT_LIB := $(LIB_DIR)/lib$(LIB_NAME).so
 
 # Find all .c and .cu files in SRC_DIR
-SRCS_C := $(wildcard $(SRC_DIR)/*.c)
+SRCS_CXX := $(wildcard $(SRC_DIR)/*.cpp)
 SRCS_CU := $(wildcard $(SRC_DIR)/*.cu)
-SRCS := $(SRCS_C) $(SRCS_CU)
+SRCS := $(SRCS_CXX) $(SRCS_CU)
 
 # Convert source files to object files in the build directory
-OBJS := $(SRCS_C:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
+OBJS := $(SRCS_CXX:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 OBJS += $(SRCS_CU:$(SRC_DIR)/%.cu=$(BUILD_DIR)/%.o)
 
 # Find all test source files in TEST_DIR
-TEST_SRCS_C := $(wildcard $(TEST_DIR)/test*.c)
+TEST_SRCS_CXX := $(wildcard $(TEST_DIR)/test*.cpp)
 TEST_SRCS_CU := $(wildcard $(TEST_DIR)/test*.cu)
-TEST_SRCS := $(TEST_SRCS_C) $(TEST_SRCS_CU)
-TEST_OBJS := $(TEST_SRCS_C:$(TEST_DIR)/%.c=$(BUILD_DIR)/$(TEST_DIR)/%.o)
+TEST_SRCS := $(TEST_SRCS_CXX) $(TEST_SRCS_CU)
+TEST_OBJS := $(TEST_SRCS_CXX:$(TEST_DIR)/%.cpp=$(BUILD_DIR)/$(TEST_DIR)/%.o)
 TEST_OBJS += $(TEST_SRCS_CU:$(TEST_DIR)/%.cu=$(BUILD_DIR)/$(TEST_DIR)/%.o)
 TEST_EXES := $(TEST_OBJS:$(BUILD_DIR)/$(TEST_DIR)/%.o=$(BIN_DIR)/$(TEST_DIR)/%)
 
@@ -65,9 +65,9 @@ clean:
 	rm -rf $(BUILD_DIR) $(LIB_DIR) $(BIN_DIR)
 
 print:
-	@echo CC=$(CC)
+	@echo CXX=$(CXX)
 	@echo NVCC=$(NVCC)
-	@echo CFLAGS=$(CFLAGS)
+	@echo CXXFLAGS=$(CXXFLAGS)
 	@echo NVCCFLAGS=$(NVCCFLAGS)
 	@echo LDFLAGS=$(LDFLAGS)
 	@echo LIBS=$(LIBS)
@@ -98,20 +98,20 @@ $(OUTPUT_LIB): $(OBJS)
 	@mkdir -p $(dir $@)
 	$(NVCC) -shared $(LDFLAGS) -o $@ $(OBJS)
 
-# Rule to compile .c files into the build directory
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+# Rule to compile .cpp files into the build directory
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Rule to compile .cu files into the build directory
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cu
 	@mkdir -p $(dir $@)
 	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
-# Rule to compile test .c files into the build directory
-$(BUILD_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.c
+# Rule to compile test .cpp files into the build directory
+$(BUILD_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Rule to compile test .cu files into the build directory
 $(BUILD_DIR)/$(TEST_DIR)/%.o: $(TEST_DIR)/%.cu
