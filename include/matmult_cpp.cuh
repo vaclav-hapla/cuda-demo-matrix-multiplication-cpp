@@ -150,18 +150,18 @@ public:
     __device__ __host__ const float* getElements() { return elements; }
 
     // Get a matrix element
-    __device__ __host__ inline float getElement(int r, int c) const { return elements[r * stride + c]; }
+    __device__ __host__ float getElement(int r, int c) const { return elements[r * stride + c]; }
 
     // Set a matrix element
-    __device__ __host__ inline void setElement(int r, int c, float value) { elements[r * stride + c] = value; }
+    __device__ __host__ void setElement(int r, int c, float value) { elements[r * stride + c] = value; }
 
     // Copy a matrix element
-    __device__ __host__ inline void copyElement(Matrix& B, int r, int c) const { B.setElement(r, c, getElement(r, c)); }
+    __device__ __host__ void copyElement(Matrix& B, int r, int c) const { B.setElement(r, c, getElement(r, c)); }
 
     // Get the blockSize x blockSize submatrix Asub of A,
     // located C submatrices to the right and R submatrices down
     // from the upper-left corner of A.
-    __device__ __host__ inline void getSubMatrix(int R, int C, int blockSize, Matrix& Asub) const
+    __device__ __host__ void getSubMatrix(int R, int C, int blockSize, Matrix& Asub) const
     {
         assert(Asub.elements_cudaMalloc == nullptr && Asub.elements_malloc == nullptr);
         Asub.init(blockSize, blockSize, blockSize);
@@ -171,7 +171,7 @@ public:
 
     // Compute a single element C(r,c) of the matrix-matrix product C = A * B
     // C_{r,c} = \sum_{k=0}^{w-1} A_{r,k} B_{k,c}
-    __device__ __host__ inline float multElement(const Matrix& B, int r, int c) const
+    __device__ __host__ float multElement(const Matrix& B, int r, int c) const
     {
         float C_rc = 0;
         for (int k = 0; k < width; k++) {
