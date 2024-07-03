@@ -181,7 +181,7 @@ public:
     bool isZero() const;
 
     // Matrix dimensions are assumed to be multiples of BLOCK_SIZE
-    void multGPU(const Matrix& A, const Matrix& B, bool optimized);
+    void multGPU(const Matrix& A, const Matrix& B, bool optimized = true);
 
     // Matrix dimensions are assumed to be multiples of BLOCK_SIZE
     void multHost(const Matrix& A, const Matrix& B);
