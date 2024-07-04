@@ -92,7 +92,10 @@ print:
 	@echo
 	@echo OUTPUT_LIB=$(OUTPUT_LIB)
 
-.PHONY: all clean lib build_test test print
+help:
+	@echo "Usage: make [all | build_test | clean | help | lib | print | test]"
+
+.PHONY: all build_test clean help lib print test
 
 
 #### RULES ####
