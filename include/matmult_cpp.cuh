@@ -107,7 +107,7 @@ public:
     }
 
     // Move constructor
-    __device__ __host__ Matrix(Matrix&& other)
+    __device__ __host__ Matrix(Matrix&& other) noexcept
         : name(other.name)
         , width(other.width)
         , height(other.height)
@@ -123,7 +123,7 @@ public:
     }
 
     // Move-assignment operator
-    __device__ __host__ Matrix& operator=(Matrix&& other)
+    __device__ __host__ Matrix& operator=(Matrix&& other) noexcept
     {
         if (this != &other) {
             name      = other.name;
